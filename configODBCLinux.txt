@@ -1,4 +1,4 @@
-# From https://blogs.msdn.microsoft.com/sqlnativeclient/2017/06/30/servicing-update-for-odbc-driver-13-1-for-linux-and-macos-released/
+## From https://blogs.msdn.microsoft.com/sqlnativeclient/2017/06/30/servicing-update-for-odbc-driver-13-1-for-linux-and-macos-released/
     sudo su 
     curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
     curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
@@ -8,6 +8,7 @@
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 
+## From: https://github.com/ContinuumIO/anaconda-issues/issues/1639
 ## - ODBC Dependencies needed:
 sudo apt install unixodbc-dev
 sudo apt install unixodbc-bin
