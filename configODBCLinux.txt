@@ -8,3 +8,19 @@
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
     echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
 
+## - ODBC Dependencies needed:
+sudo apt install unixodbc-dev
+sudo apt install unixodbc-bin
+
+## - Always good to execute:
+sudo apt update
+sudo apt upgrade
+
+## - Add line and create ~/.bash_profile:
+echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
+
+## - Anaconda packages upgrade:
+conda upgrade python
+conda upgrade pyodbc
+conda update libgcc
+
