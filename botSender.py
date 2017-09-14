@@ -84,10 +84,10 @@ def error(bot, update, error):
 
 conn_str = (
         'DRIVER={/opt/microsoft/msodbcsql/lib64/libmsodbcsql-13.1.so.9.0};'
-        'SERVER=191.33.176.100,46714;'
-        'UID=diego;'
-        'PWD=morato;'
-        'DATABASE=dblinearclipping_desenv;'    
+        'SERVER=;'
+        'UID=;'
+        'PWD=;'
+        'DATABASE=;'    
     )
 cnxn = pyodbc.connect(conn_str)
 cursor = cnxn.cursor()
