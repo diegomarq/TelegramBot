@@ -7,7 +7,7 @@ import pyodbc
 
 # message to start calling bot
 def start(bot, updater):
-    bot.send_message(chat_id=updater.message.chat_id, text="Eu sou o bot de alerta. Para saber mais, digite /login <usuario>")
+    bot.send_message(chat_id=updater.message.chat_id, text="Eu sou o bot de alerta.")
     
 def login(bot, updater, args, job_queue, chat_data):
     chat_id = updater.message.chat_id
@@ -113,11 +113,11 @@ def main():
     # print(bot.get_me())
     
     # frontend telegram class
-    updater = Updater(token='425927387:AAGOwjYib6TjshazA5uibYF_EnpWMRHo5YM')
+#    updater = Updater(token='425927387:AAGOwjYib6TjshazA5uibYF_EnpWMRHo5YM')
     
     # set dispatcher as a telegram bot handle
-    dp = updater.dispatcher
-    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+#    dp = updater.dispatcher
+#    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     
     
 
