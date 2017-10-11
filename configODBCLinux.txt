@@ -25,3 +25,35 @@ conda upgrade python
 conda upgrade pyodbc
 conda update libgcc
 
+
+
+#################################################
+#Python code:
+
+import pyodbc
+
+CONN_STR = (
+        'DRIVER={/opt/microsoft/msodbcsql/lib64/libmsodbcsql-13.1.so.9.0};'
+        'SERVER=191.33.176.100,44714;'
+        'UID=;' #user
+        'PWD=;' #pwd
+        'DATABASE=dblinearclipping;'    
+    )
+
+query = "select top 10 from NoticiaSistema"
+
+def consult_db(query):
+    cnxn = pyodbc.connect(CONN_STR)
+    cursor = cnxn.cursor()
+    
+    try:
+        cursor.execute(query)   
+        while 1:
+            row = cursor.fetchone()
+            if not row:
+                break
+            print(row)      
+    except Exception as e:
+        print(e)
+    
+    cnxn.close()    
