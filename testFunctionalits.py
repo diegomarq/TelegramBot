@@ -18,12 +18,7 @@ dp = updater.dispatcher
 #jb = updater.job_queue
 """"""
 
-CONN_STR = (
-        'DRIVER={/opt/microsoft/msodbcsql/lib64/libmsodbcsql-13.1.so.9.0};'
-        'SERVER=191.33.176.100,44714;'
-        'UID=diego.marques;'
-        'PWD=wE0xKSBX8eyX0zb;'
-        'DATABASE=dblinearclipping;'    
+CONN_STR = (    
     )
 
 #CONTACT = range(4)
@@ -124,7 +119,7 @@ def get_pwd(bot, update, user_data):
     print(text)
     
     try:
-        query = "SELECT id_usuario_sistema, NmoUsr from UsuarioSistema where st_usuario = 'A' and in_acesso_bloqueado = 'N' and LogUsr = '" + client_data['login'] + "' and cd_senha_hash = dbo.fn_senha_hash_smi('" + client_data['login'] + "', '" + client_data['pwd'] + "')"
+        query = ""
         row = consult_db(query)
         if(row is 'None'):
             bot.send_message(chat_id = client_data['chat_id'], text = 'Desculpe, seu usuario não foi encontrado.')
@@ -157,7 +152,7 @@ def get_pwd(bot, update, user_data):
 ##    user = update.message.from_user
 #    user_contact = update.message.contact.phone_number
 #    
-#    query = "select top 1 * from erp_contato where (nr_telefone_trabalho like '%" + user_contact + "%') and st_contato = 'A'"
+#    query = ""
 #    row = consult_db(query)
 #    
 #    if(row is 'None'):
