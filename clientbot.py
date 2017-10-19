@@ -21,7 +21,7 @@ dp = updater.dispatcher
 #jb = updater.job_queue
 """"""
 
-CONN_STR = (
+CONN_STR = (    
     )
 
 LOGIN_INFO = range(4)
@@ -45,22 +45,43 @@ def start(bot, update):
     # Check if it is possible search person only by name and last name
     user = update.message.from_user    
     client_data['chat_id'] = update.message.chat_id
-    print(client_data['chat_id'])
     
-    bot.send_message(chat_id = client_data['chat_id'], text='Olá ' + user.first_name + '!\nPara que eu possa te ajudar, preciso de mais algumas informações.')
-    bot.send_message(chat_id = client_data['chat_id'], text='Por favor digite e informe:\n\n /site seu site')
+    try:
+        query="p_tlg_verifica_usuario @par_id_telegram="+str(client_data['chat_id'])
+        row = consult_db(query)
+        if(row is 'None' or str(row.retorno) == 'ER'):
+            bot.send_message(chat_id = client_data['chat_id'], text='Olá ' + user.first_name + '!\n')            
+            try:
+                bot.send_message(chat_id = client_data['chat_id'], text='Por favor digite e informe:\n\n /site seu site')
+            except Exception as e:
+                print(e)
+                start(bot, update)
+        else:
+            if(str(row.retorno) == 'OK'):
+                """"""
+                client_data['cd_sistema'] = (str(row.cd_sistema)).rstrip('')
+                client_data['cd_usuario'] = (str(row.cd_usuario)).rstrip('')
+                client_data['contact'] = (str(row.nr_telefone)).rstrip('')
+                """"""
+                bot.send_message(chat_id = client_data['chat_id'], text='Olá ' + user.first_name + '!\n')  
+                bot.send_message(chat_id = client_data['chat_id'], text = 'Vamos às opções que eu posso te oferecer!')
+                        
+                button = [InlineKeyboardButton('Receber noticias', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
+                reply_markup = InlineKeyboardMarkup(build_menu(button, n_cols=1))           
+                bot.send_message(chat_id = client_data['chat_id'], text = '\nPor favor, escolha uma opção:', reply_markup=reply_markup)
+    except Exception as e:
+        print(e)                
     
 def get_site(bot, update, args):
-    client_data['site'] = args[0]
-    bot.send_message(chat_id = client_data['chat_id'], text='/login seu login')
-    
+    client_data['site'] = str(args[0])
+    bot.send_message(chat_id = client_data['chat_id'], text='/login seu login')    
     
 def get_login(bot, update, args):
-    client_data['login'] = args[0]
+    client_data['cd_usuario'] = str(args[0])
     bot.send_message(chat_id = client_data['chat_id'], text='/senha sua senha')
 
 def get_pwd(bot, update, args):    
-    client_data['pwd'] = args[0]    
+    client_data['pwd'] = str(args[0])
     
     reply_keyboard = [[KeyboardButton('Contato', request_contact=True)]]  
     contact_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True)
@@ -68,31 +89,40 @@ def get_pwd(bot, update, args):
     
 def contact(bot, update):
     user_contact = update.message.contact.phone_number
-    client_data['contact'] = user_contact
+    client_data['contact'] = str(user_contact)
     bot.send_message(chat_id = client_data['chat_id'], text='Obrigado!', reply_markup=ReplyKeyboardRemove())
     
     try:
-        query = "p_validar_usuario_telegram @par_dir_sistema='" + client_data['site'] + "', @par_cd_usuario='"+ client_data['login'] + "', @par_cd_senha='" + client_data['pwd'] + "'"
+        query = "p_validar_usuario_telegram @par_dir_sistema='" + client_data['site'] + "', @par_cd_usuario='"+ client_data['cd_usuario'] + "', @par_cd_senha='" + client_data['pwd'] + "'"
         print(query)
         row = consult_db(query)
+        print(row)
         if(row is 'None'):
             bot.send_message(chat_id = client_data['chat_id'], text = 'Desculpe, seu usuario não foi encontrado.')
-        else:
-            print('Retorno:' + row.in_acesso_autorizado)
-            if(str(row.in_acesso_autorizado) == 'S'):
+        else: 
+            
+            if(str(row.in_acesso_autorizado) == str('S')):
                 """"""
-                client_data['cd_sistema'] = row.cd_sistema
-                """"""            
-                bot.send_message(chat_id = client_data['chat_id'], text = 'Sucesso! Vamos às opções que eu posso te oferecer!')
+                client_data['cd_sistema'] = str(row.cd_sistema)
+                """"""
+                #insert parameters in db
+                isr = "p_tlg_insere_usuario @par_cd_sistema="+client_data['cd_sistema']+", @par_id_telegram="+str(client_data['chat_id'])+", @par_cd_usuario='"+(client_data['cd_usuario']).rstrip('')+"', @par_nr_telefone='"+(client_data['contact']).rstrip('')+"'" 
+                resp = insert_db(isr)
                 
-                button = [InlineKeyboardButton('Receber noticias', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
-                reply_markup = InlineKeyboardMarkup(build_menu(button, n_cols=1))           
-                bot.send_message(chat_id = client_data['chat_id'], text = '\nPor favor, escolha uma opção:', reply_markup=reply_markup)         
+                if(str(resp.retorno) == 'OK'):
+                    bot.send_message(chat_id = client_data['chat_id'], text = 'Sucesso! Vamos às opções que eu posso te oferecer!')
+                    
+                    button = [InlineKeyboardButton('Receber noticias', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
+                    reply_markup = InlineKeyboardMarkup(build_menu(button, n_cols=1))           
+                    bot.send_message(chat_id = client_data['chat_id'], text = '\nPor favor, escolha uma opção:', reply_markup=reply_markup)
+                else:
+                    raise Exception('db_error', 'Problem to insert info into db')
             else:
-                bot.send_message(chat_id = client_data['chat_id'], text = 'Infelizmente não vou poder te ajudar! Seu usuario não está autorizado.')
+                bot.send_message(chat_id = client_data['chat_id'], text = 'Infelizmente não posso te ajudar! Seu usuario não está autorizado.')               
         
     except Exception as e:
         print(e)
+        
     
 def opt_client(bot, update):    
     query = update.callback_query
@@ -101,13 +131,46 @@ def opt_client(bot, update):
                           message_id=query.message.message_id)
     opcao = query.data
     if(opcao == 'noticias'):
-        bot.send_message(chat_id=client_data['chat_id'], text='Para esta opção')
+        
+        try:
+            query = "p_tlg_consulta_aba_cliente @par_cd_sistema="+client_data['cd_sistema']+", @par_cd_usuario_cliente='"+client_data['cd_usuario']+"'"
+            row = consult_db(query)
+            if(row is 'None'):
+                print('error p_tlg_consulta_aba_cliente')
+            else:
+                """"""
+                client_data['id_conteudo'] = str(row.id_conteudo)
+                """"""
+                q_not = "p_conteudo_aba @par_cd_sistema="+client_data['cd_sistema']+", @par_id_conteudo="+client_data['id_conteudo']
+                row = consult_db(q_not)
+                if(row is 'None'):
+                    print('error in p_conteudo_aba')
+                else:
+                    bot.send_message(chat_id=client_data['chat_id'], text=str(row.no_titulo))
+            
+        except Exception as e:
+            print(e)
+        
     else:
-        bot.send_message(chat_id=client_data['chat_id'], text= 'Opção inválida. Por favor, escolha outra opção.')
         button = [InlineKeyboardButton('Receber noticias', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
         reply_markup = InlineKeyboardMarkup(build_menu(button, n_cols=1))           
-        bot.send_message(chat_id = client_data['chat_id'], text = 'Por favor, escolha uma opção:', reply_markup=reply_markup) 
-        
+        bot.send_message(chat_id = client_data['chat_id'], text = 'Opção inválida. Por favor, escolha outra opção.', reply_markup=reply_markup) 
+
+def insert_db(query):
+    cnxn = pyodbc.connect(CONN_STR)
+    cursor = cnxn.cursor()
+    
+    try:
+        cursor.execute(query)
+        row = cursor.fetchone()
+        cursor.commit()
+    except Exception as e:
+        print(e)
+        row = 'error'
+    
+    cnxn.close()    
+    return(row)
+
       
 def consult_db(query):
     cnxn = pyodbc.connect(CONN_STR)
