@@ -66,21 +66,21 @@ def start(bot, update):
                 bot.send_message(chat_id = client_data['chat_id'], text='Olá ' + user.first_name + '!\n')  
                 bot.send_message(chat_id = client_data['chat_id'], text = 'Vamos às opções que eu posso te oferecer!')
                         
-                button = [InlineKeyboardButton('Receber noticias', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
+                button = [InlineKeyboardButton('', callback_data='noticias'), InlineKeyboardButton('Outros', callback_data='outros')]
                 reply_markup = InlineKeyboardMarkup(build_menu(button, n_cols=1))           
                 bot.send_message(chat_id = client_data['chat_id'], text = '\nPor favor, escolha uma opção:', reply_markup=reply_markup)
     except Exception as e:
-        print(e)                
-    
+        print(e)    
+
 def get_site(bot, update, args):
     client_data['site'] = str(args[0])
-    bot.send_message(chat_id = client_data['chat_id'], text='/login seu login')    
+    bot.send_message(chat_id = client_data['chat_id'], text='/login seu login')               
     
 def get_login(bot, update, args):
     client_data['cd_usuario'] = str(args[0])
     bot.send_message(chat_id = client_data['chat_id'], text='/senha sua senha')
 
-def get_pwd(bot, update, args):    
+def get_pwd(bot, update, args):
     client_data['pwd'] = str(args[0])
     
     reply_keyboard = [[KeyboardButton('Contato', request_contact=True)]]  

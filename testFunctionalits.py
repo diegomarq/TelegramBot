@@ -76,7 +76,7 @@ def start(bot, update):
 
     
 #    query = "EXECUTE p_erp_funcionario_busca '" + user.first_name + ' ' +  user.last_name + "'"    
-#    row = consult_db(query)            
+#    row = consult_db(query)      
     
 #    if(row is 'None'):
 #        reply_keyboard = [[KeyboardButton('Contato', request_contact=True)]]  
