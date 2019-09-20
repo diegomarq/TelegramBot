@@ -34,7 +34,7 @@ import pyodbc
 
 CONN_STR = (
         'DRIVER={/opt/microsoft/msodbcsql/lib64/libmsodbcsql-13.1.so.9.0};'
-        'SERVER=191.33.176.100,44714;'
+        'SERVER=#server'
         'UID=;' #user
         'PWD=;' #pwd
         'DATABASE=dblinearclipping;'    
