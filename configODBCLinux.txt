@@ -37,7 +37,7 @@ CONN_STR = (
         'SERVER=#server'
         'UID=;' #user
         'PWD=;' #pwd
-        'DATABASE=dblinearclipping;'    
+        'DATABASE=;'    
     )
 
 query = "select top 10 from NoticiaSistema"
